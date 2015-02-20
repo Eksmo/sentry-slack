@@ -66,7 +66,6 @@ class SlackPlugin(notify.NotificationPlugin):
             escape(team.name.encode('utf-8')),
             escape(project.name.encode('utf-8')),
         )
-
         message = getattr(group, 'message_short', group.message).encode('utf-8')
         culprit = getattr(group, 'title', group.culprit).encode('utf-8')
 
@@ -75,10 +74,17 @@ class SlackPlugin(notify.NotificationPlugin):
         if message == culprit:
             culprit = ''
 
+        fallback_title = '[%s %s] %s' % (
+            escape(team.name.encode('utf-8')),
+            escape(project.name.encode('utf-8')),
+            message
+        )
+
         payload = {
             'parse': 'none',
-            'text': title,
             'attachments': [{
+                'pretext': title,
+                'fallback': fallback_title,
                 'color': self.color_for_group(group),
                 'fields': [{
                     'title': message,
